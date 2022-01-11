@@ -8,6 +8,11 @@ import Icon from './icon'
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
+import {signin, signup} from '../../action/auth';
+
+
+//JWT purpose
+const initialState = {firstName: '', lastName: '', email: '', password:'', confirmPassword:''}
 
 const Auth = () => {
     const classes = useStyle();
@@ -15,19 +20,39 @@ const Auth = () => {
     const [isSignup, setIsSignup] = useState(false);
     const dispatch = useDispatch();
     const history = useHistory();
+    // JWT purpose
+    const [formData, setFormData] = useState(initialState);
 
     const handleShowPassword = () => setShowPassword((prevShowPassword) => !prevShowPassword)
 
-    const handleSubmit = () => {
+    // submit from data where are user can be new or already exist.
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        //signin/ signup comes from '/action/auth'
+        // isSign up is controlled by button [signIn/ signup] switch
+        if(isSignup){
+            dispatch(signup(formData, history))
+        }else{
+            dispatch(signin(formData, history))
+
+        }
 
     }
-    const handleChange = () => {
+    const handleChange = (e) => {
+        //set only thing which one change. 
+        setFormData({...formData, [e.target.name] : e.target.value});
+
+        
 
     }
+    // for button and password icon control.
     const switchMode = () => {
         setIsSignup((prevIsSignup) => !prevIsSignup);
         setShowPassword(false);
     }
+
+    //try to sign in using google
     const googleSuccess = async (res) =>{
         const result = res?.profileObj; 
         const token = res?.tokenId;
@@ -43,6 +68,8 @@ const Auth = () => {
         }
 
     };
+
+    // if google sign in failure
     const googleFailure = () =>{
         console.log("Google sign in fail.Try again.");
     };
@@ -65,7 +92,7 @@ const Auth = () => {
 
                                     <Input name="firstName" label="First Name" handleChange={handleChange} autoFocus half />
 
-                                    <Input name="lastName" label="First Name" handleChange={handleChange} half />
+                                    <Input name="lastName" label="Last Name" handleChange={handleChange} half />
                                 </>
                             )
                         }

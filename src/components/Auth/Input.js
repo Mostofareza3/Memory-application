@@ -2,6 +2,8 @@ import { Grid, IconButton, InputAdornment, TextField } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import React from 'react';
 
+
+// create a custom input field to get the code cleaner.
 const Input = ({name,handleChange,label,autoFocus, type,handleShowPassword ,half}) => {
     return (
         <Grid item xs={12} sm={half ? 6 : 12}>
