@@ -3,44 +3,53 @@ import React, { useEffect, useState } from 'react';
 import useStyle from './styles';
 import FileBase from 'react-file-base64';
 import { useDispatch, useSelector } from 'react-redux';
-import { createPost,updatePost } from '../../action/posts';
+import { createPost, updatePost } from '../../action/posts';
 
 
 const Form = ({ currentId, setCurrentId }) => {
     const classes = useStyle();
     const dispatch = useDispatch();
-
-    const [postData, setPostData] = useState({
-        creator: '', title: '', message: '', tags: '', selectedFile: '',
-    });
-    
+    const [postData, setPostData] = useState({ title: '', message: '', tags: '', selectedFile: '' });
     //fetching the specific from redux 
+    const post = useSelector((state) => currentId ? state.posts.find((p) => p._id === currentId) : null);
+    // getting current user from the local localStorage;
+    const user = JSON.parse(localStorage.getItem('profile'));
 
-    const post = useSelector((state)=> currentId ? state.posts.find((p)=> p._id === currentId) : null);
-
-    useEffect(()=>{
-        if(post){
+    useEffect(() => {
+        if (post) {
             setPostData(post)
         }
-    },[post])
+    }, [post])
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if(currentId){
-            dispatch(updatePost(currentId,postData))
-        }else{
 
-            // console.log(postData)
-            dispatch(createPost(postData));
+        if (!currentId) {
+            // here name referred the current user and it comes from local storage.
+            dispatch(createPost({ ...postData, name: user?.result?.name }));
+            clear();
+        } else {
+            dispatch(updatePost(currentId, { ...postData, name: user?.result?.name }));
+            clear();
         }
-        clear();
+      
 
+    };
+    // if user not logIN, he can't do like, post, or create anything,
+    if(!user?.result?.name){
+        return (
+            <Paper className={classes.paper}>
+                <Typography variant="h5" text="center">
+                    You can't do this. Please login first. Thank you.
+                </Typography>
+            </Paper>
+        )
     }
     const clear = () => {
-        setCurrentId(null);
+        setCurrentId(0);
         setPostData({
-            creator: '', title: '', message: '', tags: '', selectedFile: '',
+            title: '', message: '', tags: '', selectedFile: '',
         })
 
 
@@ -48,16 +57,7 @@ const Form = ({ currentId, setCurrentId }) => {
     return (
         <Paper className={classes.paper}>
             <form autoComplete="off" noValidate classes={`${classes.form} ${classes.root}`} onSubmit={handleSubmit}>
-                <Typography text="center" variant='h6'>{!currentId ? 'Create a new' : 'Edit' } Memory</Typography>
-                <TextField
-                    name="creator"
-                    variant="outlined"
-                    label="Creator"
-                    fullWidth
-                    className={classes.fileInput}
-                    value={postData.creator}
-                    onChange={(e) => setPostData({ ...postData, creator: e.target.value })}
-                />
+                <Typography text="center" variant='h6'>{!currentId ? 'Create a new' : 'Edit'} Memory</Typography>
 
                 <TextField
                     name="title"
