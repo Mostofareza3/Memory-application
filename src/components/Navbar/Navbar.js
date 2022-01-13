@@ -2,7 +2,8 @@ import { Typography, AppBar, Toolbar, Avatar, Button } from '@material-ui/core'
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useHistory, useLocation } from 'react-router-dom';
-import useStyle from './styles'
+import useStyle from './styles';
+import decode from 'jwt-decode';
 
 
 export default function Navbar() {
@@ -23,6 +24,13 @@ export default function Navbar() {
 
     useEffect(() => {
         const token = user?.token;
+
+        // token expire handle
+        if(token){
+            const decodedToken = decode(token);
+
+            if(decodedToken.exp * 1000 < new Date().getTime()) logout();
+        }
 
         //JWT
         setUser(JSON.parse(localStorage.getItem('profile')));
