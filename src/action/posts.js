@@ -1,5 +1,5 @@
 import * as api from '../api';
-import {FETCH_ALL,UPDATE,DELETE,CREATE} from '../constants/actionTypes'
+import {FETCH_ALL,UPDATE,DELETE,CREATE,FETCH_BY_SEARCH} from '../constants/actionTypes'
 
 
 //Action creator
@@ -15,11 +15,21 @@ export const getPosts = () => async(dispatch)=> {
     }
 }
 
+export const getPostsBySearch = (searchQuery) => async (dispatch) => {
+  try {
+    
+    const { data: { data } } =  await api.fetchPostsBySearch(searchQuery);
+    //above we destructure data twice. first time because we are making axios request and the second time because we put the response data in an object {data: posts} in the backend.
+    dispatch({ type: FETCH_BY_SEARCH, payload: data })
+    
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export const createPost = (post) => async (dispatch) => {
-    // console.log(post);
     try {
       const { data } = await api.createPost(post);
-    //   console.log(data);
   
       dispatch({ type: CREATE, payload: data });
     } catch (error) {

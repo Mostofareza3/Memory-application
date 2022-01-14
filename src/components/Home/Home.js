@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import ChipInput from 'material-ui-chip-input'
-import { getPosts } from '../../action/posts';
+import { getPosts,getPostsBySearch } from '../../action/posts';
 import Form from '../Form/Form';
 import Paginate from '../Pagination';
 import Posts from '../Posts/Posts';
@@ -38,17 +38,21 @@ export default function Home() {
         }
     }
     const searchPost = ()=>{
-        if(search.trim()){
-            //dispatch --> fetch search post
-            console.dir(search.trim());
+        if(search.trim() || tags ){
+            // console.log(tags)
+            //dispatch --> fetch search post. here [using tags.join just because we can't pass an array for a parameter]
+            dispatch(getPostsBySearch({search, tags: tags.join(',')}));
+            history.push(`/posts/search?searchQuery=${search || 'none'}&tags=${tags.join(',')}`);
 
         }else{
             history.push('/');
         }
     }
 
-    const handleAdd = (tag) => setTags([...tags, tag]);
-    const handleDelete = (tagToDelete) => setTags(tags.filter((tag) => tag !== tagToDelete))
+
+    const handleAddChip = (tag) => setTags([...tags, tag]);
+
+    const handleDeleteChip = (chipToDelete) => setTags(tags.filter((tag) => tag !== chipToDelete));
 
     return (
         <>
@@ -72,8 +76,8 @@ export default function Home() {
                                 <ChipInput
                                     style={{ margin: '10px 0px' }}
                                     value={tags}
-                                    onAdd={handleAdd}
-                                    onDelete={handleDelete}
+                                    onAdd={(chip) => handleAddChip(chip)}
+                                    onDelete={(chip) => handleDeleteChip(chip)}
                                     label="Search Tags"
                                     variant="outlined"
                                 />
