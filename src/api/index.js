@@ -21,7 +21,7 @@ API.interceptors.request.use((req) => {
 
 /* [with the help of above [interceptors] our Backend will be able to get a specific header  and based on this header [Backend] middleware can to it's actions properly.]*/
 
-export const fetchPosts = () => API.get('/posts');
+export const fetchPosts = (page) => API.get(`/posts?page=${page}`);
 export const fetchPostsBySearch = (searchQuery) => API.get(`/posts/search?searchQuery=${searchQuery.search || 'none'}&tags=${searchQuery.tags}`);
 export const createPost = (newPost) => API.post('/posts', newPost);
 export const updatePost = (id, updatedPost) => API.patch(`/posts/${id}`, updatedPost);

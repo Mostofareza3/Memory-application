@@ -25,10 +25,6 @@ export default function Home() {
     const searchQuery = query.get('searchQuery');
     const classes = useStyle();
 
-    useEffect(() => {
-        dispatch(getPosts());
-
-    }, [currentId, dispatch]);
 
     const handleKeyPress = (e) => {
         //keyCode 13 means enter key
@@ -92,7 +88,7 @@ export default function Home() {
                             </AppBar>
                             <Form currentId={currentId} setCurrentId={setCurrentId} />
                             <Paper elevation={6}>
-                                <Paginate />
+                                <Paginate page={page} />
                             </Paper>
                         </Grid>
 
