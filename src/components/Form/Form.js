@@ -1,4 +1,4 @@
-import { Button, Paper, TextField, Typography } from '@material-ui/core';
+import { Button, Paper,  TextField, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import useStyle from './styles';
 import FileBase from 'react-file-base64';
@@ -48,11 +48,11 @@ const Form = ({ currentId, setCurrentId }) => {
     return (
         <Paper className={classes.paper}>
             <form autoComplete="off" noValidate classes={`${classes.form} ${classes.root}`} onSubmit={handleSubmit}>
-                <Typography text="center" variant='h6'>{!currentId ? 'Create a new' : 'Edit' } Memory</Typography>
+                <Typography text="center" variant='h6'>{!currentId ? 'Add a new' : 'Edit' } summary </Typography>
                 <TextField
                     name="creator"
                     variant="outlined"
-                    label="Creator"
+                    label="Writer Name"
                     fullWidth
                     className={classes.fileInput}
                     value={postData.creator}
@@ -62,7 +62,7 @@ const Form = ({ currentId, setCurrentId }) => {
                 <TextField
                     name="title"
                     variant="outlined"
-                    label="Title"
+                    label="Book Title"
                     fullWidth
                     className={classes.fileInput}
                     value={postData.title}
@@ -71,7 +71,7 @@ const Form = ({ currentId, setCurrentId }) => {
                 <TextField
                     name="message"
                     variant="outlined"
-                    label="Message"
+                    label="Summary"
                     fullWidth
                     className={classes.fileInput}
                     value={postData.message}

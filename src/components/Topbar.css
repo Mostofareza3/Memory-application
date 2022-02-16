@@ -1,0 +1,11 @@
+.top-container{
+    height: 40px;
+    /* width: 100vw !important; */
+    background-color: #D36800;
+    color: white;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    justify-content: center;
+    /* font-weight: bold; */
+}
