@@ -1,75 +1,100 @@
 import * as api from '../api';
-import {FETCH_ALL,UPDATE,DELETE,CREATE,FETCH_BY_SEARCH} from '../constants/actionTypes'
+import { FETCH_ALL, UPDATE, DELETE, CREATE, FETCH_BY_SEARCH, START_LOADING, END_LOADING, FETCH_POST } from '../constants/actionTypes'
 
 
 //Action creator
 
-export const getPosts = (page) => async(dispatch)=> {
+export const getPosts = (page) => async (dispatch) => {
 
-    try{
-        const {data} = await api.fetchPosts(page);
+  try {
+    dispatch({ type: START_LOADING })
 
-        console.log(data);
-
-        dispatch({ type: FETCH_ALL, payload: data })
-    }
-    catch(error){
-        console.log(error)
-    }
+    const { data } = await api.fetchPosts(page);
+    
+    dispatch({ type: FETCH_ALL, payload: data });
+    dispatch({ type: END_LOADING })
+  }
+  catch (error) {
+    console.log(error)
+  }
 }
 
-export const getPostsBySearch = (searchQuery) => async (dispatch) => {
+export const getPost = (id) => async (dispatch) => {
+
   try {
-    
-    const { data: { data } } =  await api.fetchPostsBySearch(searchQuery);
-    //above we destructure data twice. first time because we are making axios request and the second time because we put the response data in an object {data: posts} in the backend.
-    dispatch({ type: FETCH_BY_SEARCH, payload: data })
-    
+    dispatch({ type: START_LOADING });
+
+    const { data } = await api.fetchPost(id);
+
+    dispatch({ type: FETCH_POST, payload: { post: data } });
+    dispatch({ type: END_LOADING });
+
   } catch (error) {
     console.log(error);
   }
 }
 
-export const createPost = (post) => async (dispatch) => {
-    try {
-      const { data } = await api.createPost(post);
-  
-      dispatch({ type: CREATE, payload: data });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  
-  export const updatePost = (id, post) => async (dispatch) => {
-    try {
-      const { data } = await api.updatePost(id, post);
-  
-      dispatch({ type: UPDATE, payload: data });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+export const getPostsBySearch = (searchQuery) => async (dispatch) => {
+  try {
+    dispatch({ type: START_LOADING })
 
+    const { data: { data } } = await api.fetchPostsBySearch(searchQuery);
 
-export const deletePost = (id)=> async (dispatch)=> {
-    try{
-        await api.deletePost(id);
+    //above we destructure data twice. first time because we are making axios request and the second time because we put the response data in an object {data: posts} in the backend.
+    dispatch({ type: FETCH_BY_SEARCH, payload: { data } })
+    dispatch({ type: END_LOADING });
 
-        dispatch({ type: DELETE, payload: id })
-    }
-    catch(error){
-        console.log(error);
-    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const createPost = (post, history) => async (dispatch) => {
+  try {
+    dispatch({ type: START_LOADING })
+
+    const { data } = await api.createPost(post);
+
+    history.push(`/posts/${data._id}`)
+
+    dispatch({ type: CREATE, payload: data });
+    dispatch({ type: END_LOADING });
+
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-export const likePost = (id)=> async (dispatch) => {
-    try{
-        const {data} =  await api.likePost(id);
+export const updatePost = (id, post) => async (dispatch) => {
+  try {
+    const { data } = await api.updatePost(id, post);
 
-        dispatch({ type : UPDATE, payload: data})
-    }
-    catch(error){
-        console.log(error);
+    dispatch({ type: UPDATE, payload: data });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-    }
+
+export const deletePost = (id) => async (dispatch) => {
+  try {
+    await api.deletePost(id);
+
+    dispatch({ type: DELETE, payload: id })
+  }
+  catch (error) {
+    console.log(error);
+  }
+};
+
+export const likePost = (id) => async (dispatch) => {
+  try {
+    const { data } = await api.likePost(id);
+
+    dispatch({ type: UPDATE, payload: data })
+  }
+  catch (error) {
+    console.log(error);
+
+  }
 }

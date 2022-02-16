@@ -4,6 +4,7 @@ import useStyle from './styles';
 import FileBase from 'react-file-base64';
 import { useDispatch, useSelector } from 'react-redux';
 import { createPost, updatePost } from '../../action/posts';
+import { useHistory } from 'react-router-dom';
 
 
 const Form = ({ currentId, setCurrentId }) => {
@@ -11,9 +12,10 @@ const Form = ({ currentId, setCurrentId }) => {
     const dispatch = useDispatch();
     const [postData, setPostData] = useState({ title: '', message: '', tags: '', selectedFile: '' });
     //fetching the specific from redux 
-    const post = useSelector((state) => currentId ? state.posts.find((p) => p._id === currentId) : null);
+    const post = useSelector((state) => currentId ? state.posts.posts.find((p) => p._id === currentId) : null);
     // getting current user from the local localStorage;
     const user = JSON.parse(localStorage.getItem('profile'));
+    const history = useHistory();
 
     useEffect(() => {
         if (post) {
@@ -23,11 +25,9 @@ const Form = ({ currentId, setCurrentId }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-
         if (!currentId) {
             // here name referred the current user and it comes from local storage.
-            dispatch(createPost({ ...postData, name: user?.result?.name }));
+            dispatch(createPost({ ...postData, name: user?.result?.name },history));
             clear();
         } else {
             dispatch(updatePost(currentId, { ...postData, name: user?.result?.name }));
@@ -55,7 +55,7 @@ const Form = ({ currentId, setCurrentId }) => {
 
     }
     return (
-        <Paper className={classes.paper}>
+        <Paper className={classes.paper} elevation={6}>
             <form autoComplete="off" noValidate classes={`${classes.form} ${classes.root}`} onSubmit={handleSubmit}>
                 <Typography text="center" variant='h6'>{!currentId ? 'Create a new' : 'Edit'} Memory</Typography>
 
@@ -73,6 +73,8 @@ const Form = ({ currentId, setCurrentId }) => {
                     variant="outlined"
                     label="Message"
                     fullWidth
+                    multiline 
+                    rows={4}
                     className={classes.fileInput}
                     value={postData.message}
                     onChange={(e) => setPostData({ ...postData, message: e.target.value })}

@@ -1,4 +1,4 @@
-import { Button, Card, CardActions, CardContent, CardMedia, Typography } from '@material-ui/core';
+import { Button, Card, CardActions, CardContent, CardMedia, Typography, ButtonBase } from '@material-ui/core';
 import React from 'react';
 import useStyle from './style';
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
@@ -8,12 +8,14 @@ import moment from 'moment';
 import { useDispatch } from 'react-redux';
 import { deletePost, likePost } from '../../../action/posts';
 import ThumbUpAltOutlined from '@material-ui/icons/ThumbUpAltOutlined';
+import { useHistory, Link } from 'react-router-dom';
 
 const Post = ({ post, setCurrentId }) => {
 
     const classes = useStyle();
     const dispatch = useDispatch();
     const user = JSON.parse(localStorage.getItem('profile'));
+    const history = useHistory();
 
     // like count controller sub-component.
     const Likes = () => {
@@ -29,54 +31,50 @@ const Post = ({ post, setCurrentId }) => {
         return <><ThumbUpAltOutlined fontSize="small" />&nbsp;Like</>;
     };
 
+    const openPost = () => {
+        history.push(`/posts/${post._id}`)
+    }
+
     return (
-        <Card className={classes.card} raised elevation={6}>
-            <CardMedia className={classes.media} image={post.selectedFile} title={post.title} />
-
-            <div className={classes.overlay}>
-                <Typography variant="h6">{post?.name}</Typography>
-                <Typography variant="body2">{moment(post.createdAt).fromNow()}</Typography>
-            </div>
-
-            {/* ----check is post creator it is or not? by using google login or manual login to show Edit button */}
-
-            {(user?.result?.googleId === post?.creator || user?.result?._id === post?.creator) && (
-                <div className={classes.overlay2}>
-                    <Button
-                        style={{ color: 'white' }}
-                        size="small"
-                        onClick={() => { setCurrentId(post._id) }}>
-                        <MoreHorizIcon fontSize="medium" />
-                    </Button>
+        <Card className={classes.card} raised elevation={6} >
+         
+                <CardMedia className={classes.media} image={post.selectedFile || 'https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png'} title={post.title} />
+                <div className={classes.overlay}>
+                    <Typography variant="h6">{post.name}</Typography>
+                    <Typography variant="body2">{moment(post.createdAt).fromNow()}</Typography>
                 </div>
-            )}
-            <div className={classes.details}>
-                <Typography variant="body2" color="textSecondary">{post.tags.map((tag) => `#${tag} `)}</Typography>
-
-            </div>
-            <Typography className={classes.title} variant="h5" gutterBottom>{post.title}</Typography>
-            <CardContent>
-                <Typography color="textSecondary" variant="body2" component="p">{post.message}</Typography>
-            </CardContent>
-            <CardActions className={classes.cardActions}>
-                {/* ------like button  ------   */}
-                <Button size="small"
-                    color="primary"
-                    dispatch={!user?.result}
-                    onClick={() => { dispatch(likePost(post._id)) }}>
-                    {/* sub component */}
-                    <Likes />
-
-                </Button>
-                {/* ----check is post creator it is or not? by using google login or manual login to show delete button */}
                 {(user?.result?.googleId === post?.creator || user?.result?._id === post?.creator) && (
-
-                    <Button size="small" color="primary" onClick={() => dispatch(deletePost(post._id))}>
-                        <DeleteIcon fontSize="small" />
-                        Delete
+                    <div className={classes.overlay2} name="edit">
+                        <Button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setCurrentId(post._id);
+                            }}
+                            style={{ color: 'white' }}
+                            size="small"
+                        >
+                            <MoreHorizIcon fontSize="medium" />
+                        </Button>
+                    </div>
+                )}
+                <div className={classes.details}>
+                    <Typography variant="body2" color="textSecondary" component="h2">{post.tags.map((tag) => `#${tag} `)}</Typography>
+                </div>
+                <Typography className={classes.title} gutterBottom variant="h5" component="h2">{post.title}</Typography>
+                <CardContent>
+                    <Typography variant="body2" color="textSecondary" component="p">{post.message.split(' ').splice(0, 20).join(' ')}...</Typography>
+                    <Link to={`/posts/${post._id}`}> Learn more</Link>
+                </CardContent>
+            {/* </ButtonBase> */}
+            <CardActions className={classes.cardActions}>
+                <Button size="small" color="primary" disabled={!user?.result} onClick={() => dispatch(likePost(post._id))}>
+                    <Likes />
+                </Button>
+                {(user?.result?.googleId === post?.creator || user?.result?._id === post?.creator) && (
+                    <Button size="small" color="secondary" onClick={() => dispatch(deletePost(post._id))}>
+                        <DeleteIcon fontSize="small" /> &nbsp; Delete
                     </Button>
                 )}
-
             </CardActions>
         </Card>
     );

@@ -2,6 +2,8 @@ import axios from 'axios';
 
 // create an axios instance ,  
 const API = axios.create({ baseURL: 'http://localhost:5000' });
+// const API = axios.create({ baseURL: 'https://summarize-books.herokuapp.com' });
+
 
 /*
 Auth middleware. Our [backend] middleware can't work without this.
@@ -21,6 +23,7 @@ API.interceptors.request.use((req) => {
 
 /* [with the help of above [interceptors] our Backend will be able to get a specific header  and based on this header [Backend] middleware can to it's actions properly.]*/
 
+export const fetchPost = (id) => API.get(`/posts/${id}`);
 export const fetchPosts = (page) => API.get(`/posts?page=${page}`);
 export const fetchPostsBySearch = (searchQuery) => API.get(`/posts/search?searchQuery=${searchQuery.search || 'none'}&tags=${searchQuery.tags}`);
 export const createPost = (newPost) => API.post('/posts', newPost);

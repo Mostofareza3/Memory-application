@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import ChipInput from 'material-ui-chip-input'
-import { getPosts,getPostsBySearch } from '../../action/posts';
+import { getPosts, getPostsBySearch } from '../../action/posts';
 import Form from '../Form/Form';
 import Paginate from '../Pagination';
 import Posts from '../Posts/Posts';
@@ -33,14 +33,14 @@ export default function Home() {
             searchPost();
         }
     }
-    const searchPost = ()=>{
-        if(search.trim() || tags ){
+    const searchPost = () => {
+        if (search.trim() || tags) {
             // console.log(tags)
             //dispatch --> fetch search post. here [using tags.join just because we can't pass an array for a parameter]
-            dispatch(getPostsBySearch({search, tags: tags.join(',')}));
+            dispatch(getPostsBySearch({ search, tags: tags.join(',') }));
             history.push(`/posts/search?searchQuery=${search || 'none'}&tags=${tags.join(',')}`);
 
-        }else{
+        } else {
             history.push('/');
         }
     }
@@ -87,9 +87,12 @@ export default function Home() {
                                 </Button>
                             </AppBar>
                             <Form currentId={currentId} setCurrentId={setCurrentId} />
-                            <Paper elevation={6}>
-                                <Paginate page={page} />
-                            </Paper>
+                            {(!searchQuery && !tags.length) && (
+
+                                <Paper elevation={6} className={classes.pagination}>
+                                    <Paginate page={page} />
+                                </Paper>
+                            )}
                         </Grid>
 
                     </Grid>
